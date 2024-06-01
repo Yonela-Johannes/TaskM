@@ -62,7 +62,7 @@ A simple NodeJS restfull application that manages users and tasks for those user
 First, create the environment variables file `.env` in the server folder. The `.env` file contains the following environment variables:
 
 - MONGODB_URL = `your MongoDB URL`
-- PORT = `8800` or any port number
+- PORT = `5000` or any port number
 
 &nbsp;
 
@@ -73,9 +73,3 @@ First, create the environment variables file `.env` in the server folder. The `.
 3. Run `npm start` to start the server.
 
 If configured correctly, you should see a message indicating that the server is running successfully and `Database Connected`.
-
-&nbsp;
-
-## For more details, Contact:
-
-- Email: johannesyonelae@gmail.com
