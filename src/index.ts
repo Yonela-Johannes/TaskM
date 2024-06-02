@@ -34,7 +34,6 @@ app.use(cors({origin: ['http://localhost:5000'], credentials: true}));
 
 app.use("/api/users", routes());
 
-
 app.listen(port, async () => {
   console.log(`App is running at http://localhost:${port}`)
   

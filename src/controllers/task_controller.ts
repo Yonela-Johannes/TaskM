@@ -28,7 +28,6 @@ export const createTask = async (req: Request, res: Response) => {
 // @access Public
 export const getTasks = async (req: Request, res: Response) => {
   const { user_id } = req.params;
-
   validateMongoDbId(user_id, res);
 
   try {
@@ -73,9 +72,9 @@ export const updateTask = async (req: Request, res: Response) => {
       {name, description, next_execute_date_time}, 
       {new: true}
     );
-    return res.status(200).json(task).end();
+    return res.status(200).end();
   } catch (error: any) {
-    return res.status(404).json({message: error.message}).end();
+    return res.status(500).json({message: error.message}).end();
   }
 };
 
