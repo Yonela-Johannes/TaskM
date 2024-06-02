@@ -1,5 +1,16 @@
 import mongoose from "mongoose";
 
+export interface TaskDocument extends mongoose.Document {
+  user: mongoose.Schema.Types.ObjectId;
+  name: string;
+  description: string;
+  date_time: Date;
+  next_execution_date_time: Date;
+  status: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 const taskSchema = new mongoose.Schema(
   {
     user: {
@@ -32,4 +43,6 @@ const taskSchema = new mongoose.Schema(
   }
 );
 
-export const Task = mongoose.model("Task", taskSchema);
+const TaskModel = mongoose.model<TaskDocument>("Task", taskSchema);
+
+export default TaskModel

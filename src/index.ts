@@ -1,23 +1,29 @@
 import MongoStore from "connect-mongo";
-import mongoose, { Promise } from "mongoose";
+import mongoose from "mongoose";
 import express from "express";
 import session from "express-session";
 import { handleError, notFound } from "./middlewares/errorHandler";
 import cors from "cors";
 import dotenv from "dotenv";
-import user_routes from "./routes/user_routes";
+import routes from "./routes/routes";
+import config from "config"
+import connect from "./utils/connect";
+import swaggerDocs from "./utils/swagger";
+ 
+const port = config.get<number>('port')
 
 const app = express();
-const PORT = process.env.PORT || 5000;
 
 dotenv.config()
+const dbUri = config.get<string>("dbUri")
+
 app.use(
   session({
     resave: false,
     saveUninitialized: false,
     secret: "mysecret",
     store: MongoStore.create({
-      mongoUrl: process.env.MONGODB_URI,
+      mongoUrl: dbUri,
       ttl: 12 * 60 * 60
     })
   })
@@ -26,22 +32,15 @@ app.use(
 app.use(express.json());
 app.use(cors({origin: ['http://localhost:5000'], credentials: true}));
 
-app.use("/api/users", user_routes());
+app.use("/api/users", routes());
 
-app.use(notFound)
-app.use(handleError)
 
-mongoose.Promise  = Promise;
-
-const mongoUri = process.env.MONGODB_URI;
-
-if (!mongoUri) {
-  throw new Error('MONGODB_URI environment variable is not defined');
-}
-
-const server = app.listen(PORT, () => {
-  mongoose.connect(mongoUri)
-    .then(() => console.log("Database connected"))
-    .catch((err) => console.log(err.message));
-  console.log(`Server is running at http://localhost:${PORT}`)
+app.listen(port, async () => {
+  console.log(`App is running at http://localhost:${port}`)
+  
+  await connect()
+  swaggerDocs(app, port)
+  
+  app.use(notFound)
+  app.use(handleError)
 });

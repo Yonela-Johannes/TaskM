@@ -1,5 +1,13 @@
 import mongoose from "mongoose";
 
+export interface UserDocument extends mongoose.Document {
+  username: string;
+  first_name: string;
+  last_name: string;
+  createdAt: Date;
+  updatedAt: Date;
+}
+
 const userSchema = new mongoose.Schema(
   {
     username: {
@@ -20,6 +28,7 @@ const userSchema = new mongoose.Schema(
     timestamps: true,
   }
 );
-const User = mongoose.model("User", userSchema);
 
-export { User }
+const UserModel = mongoose.model<UserDocument>("User", userSchema);
+
+export default UserModel 

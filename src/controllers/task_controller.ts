@@ -1,7 +1,7 @@
-import { validateMongoDbId } from "../config/validateMongoDbId";
-import { Task } from "../models/task_model";
+import TaskModel from "../models/task.model";
 import {  Request, Response } from 'express';
 import cron from 'node-cron';
+import { validateMongoDbId } from "../utils/validateMongoDbId";
 
 // Create task
 // @desc Create new task
@@ -12,11 +12,11 @@ export const createTask = async (req: Request, res: Response) => {
   const {name, description, status, date_time, next_execute_date_time} = req.body;
   validateMongoDbId(user_id, res);
 
-  const task = new Task({name, description, status, date_time, user: user_id, next_execute_date_time})
+  const task = new TaskModel({name, description, status, date_time, user: user_id, next_execute_date_time})
 
   try {
     await task.save();
-    res.status(200).json({ message: 'Task created'}).end()
+    res.status(200).json({ message: 'TaskModel created'}).end()
   } catch (error: any) {
     res.status(409).json({message: error.message}).end()
   }
@@ -27,8 +27,12 @@ export const createTask = async (req: Request, res: Response) => {
 // @route GET /api/users/{user_id}/tasks/{task_id}
 // @access Public
 export const getTasks = async (req: Request, res: Response) => {
+  const { user_id } = req.params;
+
+  validateMongoDbId(user_id, res);
+
   try {
-      const tasks = await Task.find().populate('user').sort({"date_time": -1});
+      const tasks = await TaskModel.find({user: user_id}).populate('user').sort({"date_time": -1});
       res.status(200).json(tasks).end()
   } catch (error: any) {
     res.status(500).json({message: error.message}).end()
@@ -46,7 +50,7 @@ export const getTask = async (req: Request, res: Response) => {
   validateMongoDbId(task_id, res);
 
   try {
-      const task = await Task.findOne({_id: task_id, user: user_id}).populate('user');
+      const task = await TaskModel.findOne({_id: task_id, user: user_id}).populate('user');
       res.status(200).json(task).end()
   } catch (error: any) {
     res.status(500).json({message: error.message})
@@ -65,7 +69,7 @@ export const updateTask = async (req: Request, res: Response) => {
   validateMongoDbId(task_id, res);
 
   try {
-    const task = await Task.findOneAndUpdate({_id: task_id, user: user_id}, 
+    const task = await TaskModel.findOneAndUpdate({_id: task_id, user: user_id}, 
       {name, description, next_execute_date_time}, 
       {new: true}
     );
@@ -86,12 +90,12 @@ export const deleteTask = async (req: Request, res: Response) => {
   validateMongoDbId(task_id, res);
 
   try {
-    await Task.findOneAndDelete({_id: task_id, user: user_id});
-    const task = await Task.findOne({_id: task_id, user: user_id});
+    await TaskModel.findOneAndDelete({_id: task_id, user: user_id});
+    const task = await TaskModel.findOne({_id: task_id, user: user_id});
     if(task){
       return res.status(500).end();
     }
-    return res.status(200).json({message: 'Task deleted successful'});
+    return res.status(200).json({message: 'TaskModel deleted successful'});
   } catch (error: any) {
     return res.status(404).json({message: error.message}).end();
   }
@@ -103,13 +107,13 @@ cron.schedule('* * * * *', async () => {
   const now = new Date();
 
   try {
-      const tasks = await Task.find({
+      const tasks = await TaskModel.find({
           status: 'pending',
           next_execute_date_time: { $lt: now },
       });
 
       tasks.forEach(async (task) => {
-          console.log(`Task: ${task.name}, Next Execute Date Time: ${task.next_execute_date_time}`);
+          console.log(`TaskModel: ${task.name}, Next Execute Date Time: ${task.next_execution_date_time}`);
           task.status = 'done';
           await task.save();
       });
