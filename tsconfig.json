@@ -9,12 +9,6 @@
         "resolveJsonModule": true /* Enable importing .json files */,
         "forceConsistentCasingInFileNames": true /* Ensure that casing is correct in imports. */,
         "skipLibCheck": true,
-        // "baseUrl": "./",
-        // "paths": {
-        //   "@models/*": ["src/models/*"],
-        //   "@controllers/*": ["src/controllers/*"],
-        //   "@routes/*": ["src/routes/*"]
-        // }
       },
-      // "include": ["src"]
+      "include": ["./api/*.ts"]
 }

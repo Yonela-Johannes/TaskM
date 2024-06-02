@@ -40,7 +40,9 @@ app.listen(port, async () => {
   
   await connect()
   swaggerDocs(app, port)
-  
+
   app.use(notFound)
   app.use(handleError)
 });
+
+export default app;
